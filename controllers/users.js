@@ -25,15 +25,19 @@ const getUserById = (req, res) => {
 }
 
 const createUser = (req, res) => {
-  // INSERT INTO USERS FIRST AND LAST NAME 
-  let sql = "INSERT INTO users(first_name, last_name) VALUES(?, ?);"
+  // INSERT INTO USERS FIRST AND LAST NAME
+  // let sql = "select ?,?,?,?,?,?,?,?,?,?,? FROM users JOIN usersAddress on users.id = usersAddress.user_id JOIN usersContact on users.id = usersContact.user_id"; 
+  let sql = "INSERT INTO users(first_name, last_name) VALUES(?,?); INSERT INTO usersAddress(user_id, address, city, county, state, zip) VALUES(?,?,?,?,?,?); INSERT INTO usersContact(user_id, phone1, phone2, email) VALUES(?,?,?,?)"
+  
   // WHAT GOES IN THE BRACKETS
 
-  const rep = [req.body.first_name, req.body.last_name, req.body.user_id, req.body.address, req.body.city, req.body.county, req.body.state, req.body.zip, req.body.phone1, req.body.phone2, req.body.email];
-  sql = mysql.format(sql, rep)
+  const rep = [req.body.first_name, req.body.last_name, req.body.user_id, req.body.address, req.body.city, req.body.county, req.body.state, req.body.zip, req.body.user_id, req.body.phone1, req.body.phone2, req.body.email];
+
+  sql = mysql.format(sql, rep);
 
   pool.query(sql, (err, results) => {
     if (err) return handleSQLError(res, err)
+    console.log(results)
     return res.json({ newId: results.insertId });
   })
 }
@@ -41,6 +45,7 @@ const createUser = (req, res) => {
 const updateUserById = (req, res) => {
   // UPDATE USERS AND SET FIRST AND LAST NAME WHERE ID = <REQ PARAMS ID>
   let sql = "UPDATE ?? SET first_name = ?, last_name = ? where ?? = ?";
+
   const rep = ['users', req.body.first_name, req.body.last_name, 'id', req.params.id];
   // WHAT GOES IN THE BRACKETS
   sql = mysql.format(sql, rep)
